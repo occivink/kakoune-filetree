@@ -6,7 +6,7 @@ set-face FileTreeOpenFiles black,yellow
 set-face FileTreeDirName rgb:606060,default
 set-face FileTreeFileName default,default
 
-define-command -hidden filetree %{
+define-command filetree %{
     eval %{
         try %{ delete-buffer *filetree* }
         set-register / "^\Q./%val{bufname}\E$"
