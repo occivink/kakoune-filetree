@@ -6,7 +6,10 @@ set-face FileTreeOpenFiles black,yellow
 set-face FileTreeDirName rgb:606060,default
 set-face FileTreeFileName default,default
 
-define-command filetree %{
+define-command filetree -docstring "
+Open a scratch buffer with all paths returned by the specified command.
+Buffers to the files can be opened using <ret>.
+" %{
     eval %{
         try %{ delete-buffer *filetree* }
         set-register / "^\Q./%val{bufname}\E$"
@@ -22,7 +25,7 @@ define-command filetree %{
     }
 }
 
-define-command -hidden buflist-to-regex -params ..1 %{
+define-command -hidden filetree-buflist-to-regex -params ..1 %{
     try %{
         # eval to avoid using a shell scope if *filetree* is not open
         eval -buffer *filetree* %{
@@ -39,8 +42,8 @@ define-command -hidden buflist-to-regex -params ..1 %{
     }
 }
 
-hook global BufCreate .* %{ buflist-to-regex }
-hook global BufClose  .* %{ buflist-to-regex %val{hook_param} }
+hook global BufCreate .* %{ filetree-buflist-to-regex }
+hook global BufClose  .* %{ filetree-buflist-to-regex %val{hook_param} }
 
 define-command -hidden filetree-open-files %{
     eval -draft -itersel %{

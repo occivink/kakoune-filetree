@@ -22,6 +22,8 @@ There are a few faces that can be changed:
 * `FileTreeOpenFiles`: Used for files that have an open buffers (`black,yellow`)
 * `FileTreeDirName`: Used for the directory part of filepaths (`rgb:606060,default`)
 * `FileTreeFileName`: Used for the basename of filepaths (`default,default`)
+ 
+If you want `filetree` to take a directory as argument, I suggest writing a thin wrapper that sets the option before calling `filetree`. Since the option can be set to *anything* this is not something that can be added to the script in a generic way.
 
 ## License
 
