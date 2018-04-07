@@ -2,9 +2,9 @@ declare-option -hidden str filetree_open_files
 
 declare-option str filetree_find_cmd 'find .  -not -type d -and -not -path "*/\.*"'
 
-set-face FileTreeOpenFiles black,yellow
-set-face FileTreeDirName rgb:606060,default
-set-face FileTreeFileName default,default
+set-face global FileTreeOpenFiles black,yellow
+set-face global FileTreeDirName rgb:606060,default
+set-face global FileTreeFileName default,default
 
 define-command filetree -docstring "
 Open a scratch buffer with all paths returned by the specified command.
