@@ -11,7 +11,7 @@ define-command filetree -docstring "
 Open a scratch buffer with all paths returned by the specified command.
 Buffers to the files can be opened using <ret>.
 " %{
-    eval %{
+    eval -save-regs '/|' %{
         try %{ delete-buffer *filetree* }
         set-register / "^\Q./%val{bufname}\E$"
         edit -scratch *filetree*
