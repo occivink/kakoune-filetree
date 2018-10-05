@@ -10,7 +10,7 @@ Add `filetree.kak` to your autoload directory: `~/.config/kak/autoload/`, or sou
 
 ## Usage
 
-Simply call `filetree`. A new buffer will be open with all files found below (relative to Kakoune’s directory), one by line. The files that are open in buffers are highlighted with a special face.
+Simply call `:filetree`. A new buffer will be open with all files found below (relative to Kakoune’s directory), one by line. The files that are open in buffers are highlighted with a special face.
 
 From the `*filetree*` buffer, you can open files by pressing <kbd>Return</kbd>. You can also use this to create files: enter a new filename in the buffer, and open it with <kbd>Return</kbd>.
 
@@ -23,7 +23,7 @@ There are a few faces that can be changed:
 * `FileTreeDirName`: Used for the directory part of filepaths (`rgb:606060,default`)
 * `FileTreeFileName`: Used for the basename of filepaths (`default,default`)
 
-If you want `filetree` to take a directory as argument, I suggest writing a thin wrapper that sets the option before calling `filetree`. Since the option can be set to *anything* this is not something that can be added to the script in a generic way.
+If you want `:filetree` to take a directory as argument, I suggest writing a thin wrapper that sets the option before calling `:filetree`. Since the option can be set to *anything* this is not something that can be added to the script in a generic way.
 
 ## License
 
