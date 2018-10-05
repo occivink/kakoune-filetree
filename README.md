@@ -27,4 +27,4 @@ If you want `filetree` to take a directory as argument, I suggest writing a thin
 
 ## License
 
-Unlicense
+[Unlicense](http://unlicense.org)
