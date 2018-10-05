@@ -1,4 +1,4 @@
-decl -docstring "name of the client in which all source code jumps will be executed" str jumpclient
+decl -docstring "Name of the client in which all source code jumps will be executed" str jumpclient
 decl str filetree_find_cmd 'find .  -not -type d -and -not -path "*/\.*"'
 
 decl -hidden str filetree_open_files
@@ -18,7 +18,7 @@ Buffers to the files can be opened using <ret>.
         reg '|' %opt{filetree_find_cmd}
         exec '<a-!><ret>'
         exec 'ggd'
-        # center view on previous file
+        # Center view on previous file
         try %{ exec '/<ret>vc' }
         addhl buffer/ dynregex '%opt{filetree_open_files}' 0:FileTreeOpenFiles
         addhl buffer/ regex '^([^\n]+/)([^/\n]+)$' 1:FileTreeDirName 2:FileTreeFileName
@@ -28,7 +28,7 @@ Buffers to the files can be opened using <ret>.
 
 def -hidden filetree-buflist-to-regex -params ..1 %{
     try %{
-        # eval to avoid using a shell scope if *filetree* is not open
+        # Eval to avoid using a shell scope if *filetree* is not open
         eval -buffer *filetree* %{
             set buffer filetree_open_files %sh{
                 r=$(
@@ -37,7 +37,7 @@ def -hidden filetree-buflist-to-regex -params ..1 %{
                         [ "$i" != "$1" ] && printf "%s%s%s" "\Q" "$i" "\E|"
                     done
                 )
-                # strip trailing |
+                # Strip trailing |
                 printf "^\./(%s)$" "${r%|}"
             }
         }
@@ -50,7 +50,7 @@ hook global BufClose  .* %{ filetree-buflist-to-regex %val{hook_param} }
 def -hidden filetree-open-files %{
     eval -draft -itersel %{
         exec ';<a-x>H'
-        # don't -existing, so that this can be used to create files
+        # Don’t -existing, so that this can be used to create files
         eval -draft %{ edit %reg{.} }
     }
     exec '<space>;<a-x>H'
