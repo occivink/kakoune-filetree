@@ -6,7 +6,7 @@
 
 ## Setup
 
-Add `filetree.kak` to your autoload directory: `~/.config/kak/autoload/`, or source it manually.
+Add `filetree.kak` to your `autoload` directory: `~/.config/kak/autoload/`, or source it manually.
 
 ## Usage
 
