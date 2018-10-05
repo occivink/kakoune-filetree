@@ -1,21 +1,21 @@
-declare-option -docstring "name of the client in which all source code jumps will be executed" str jumpclient
-declare-option str filetree_find_cmd 'find .  -not -type d -and -not -path "*/\.*"'
+decl -docstring "name of the client in which all source code jumps will be executed" str jumpclient
+decl str filetree_find_cmd 'find .  -not -type d -and -not -path "*/\.*"'
 
-declare-option -hidden str filetree_open_files
+decl -hidden str filetree_open_files
 
-set-face global FileTreeOpenFiles black,yellow
-set-face global FileTreeDirName rgb:606060,default
-set-face global FileTreeFileName default,default
+face global FileTreeOpenFiles black,yellow
+face global FileTreeDirName rgb:606060,default
+face global FileTreeFileName default,default
 
-define-command filetree -docstring "
+def filetree -docstring "
 Open a scratch buffer with all paths returned by the specified command.
 Buffers to the files can be opened using <ret>.
 " %{
     eval -save-regs '/|' %{
         try %{ delete-buffer *filetree* }
-        set-register / "^\Q./%val{bufname}\E$"
+        reg / "^\Q./%val{bufname}\E$"
         edit -scratch *filetree*
-        set-register '|' %opt{filetree_find_cmd}
+        reg '|' %opt{filetree_find_cmd}
         exec '<a-!><ret>'
         exec 'ggd'
         # center view on previous file
@@ -26,11 +26,11 @@ Buffers to the files can be opened using <ret>.
     }
 }
 
-define-command -hidden filetree-buflist-to-regex -params ..1 %{
+def -hidden filetree-buflist-to-regex -params ..1 %{
     try %{
         # eval to avoid using a shell scope if *filetree* is not open
         eval -buffer *filetree* %{
-            set-option buffer filetree_open_files %sh{
+            set buffer filetree_open_files %sh{
                 r=$(
                     eval set -- "$kak_buflist"
                     for i in "$@"; do
@@ -47,7 +47,7 @@ define-command -hidden filetree-buflist-to-regex -params ..1 %{
 hook global BufCreate .* %{ filetree-buflist-to-regex }
 hook global BufClose  .* %{ filetree-buflist-to-regex %val{hook_param} }
 
-define-command -hidden filetree-open-files %{
+def -hidden filetree-open-files %{
     eval -draft -itersel %{
         exec ';<a-x>H'
         # don't -existing, so that this can be used to create files
