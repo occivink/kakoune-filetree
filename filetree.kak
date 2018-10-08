@@ -27,18 +27,18 @@ Buffers to the files can be opened using <ret>.
 }
 
 def -hidden filetree-buflist-to-regex -params 0..1 %{
-  # Try eval to avoid using a shell scope if *filetree* is not open
-  try %{ eval -buffer *filetree* %{
-    set buffer filetree_open_files %sh{
-      discarded_bufname=$1
-      eval "set -- $kak_buflist"
-      for bufname in "$@"; do
-        test "$bufname" != "$discarded_bufname" &&
-          printf '^\\Q./%s\\E$\n' "$bufname"
-      done |
-      paste --serial --delimiters '|'
-    }
-  }}
+    # Try eval to avoid using a shell scope if *filetree* is not open
+    try %{ eval -buffer *filetree* %{
+        set buffer filetree_open_files %sh{
+            discarded_bufname=$1
+            eval "set -- $kak_buflist"
+            for bufname in "$@"; do
+                test "$bufname" != "$discarded_bufname" &&
+                    printf '^\\Q./%s\\E$\n' "$bufname"
+            done |
+            paste --serial --delimiters '|'
+        }
+    }}
 }
 
 hook global BufCreate .* %{ filetree-buflist-to-regex }
