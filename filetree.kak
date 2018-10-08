@@ -45,6 +45,7 @@ hook global BufCreate .* %{ filetree-buflist-to-regex }
 hook global BufClose  .* %{ filetree-buflist-to-regex %val{hook_param} }
 
 def -hidden filetree-open-files %{
+    exec '<a-s>'
     eval -draft -itersel %{
         exec ';<a-x>H'
         # Don’t -existing, so that this can be used to create files
