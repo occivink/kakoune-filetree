@@ -11,19 +11,25 @@ def filetree -docstring "
 Open a scratch buffer with all paths returned by the specified command.
 Buffers to the files can be opened using <ret>.
 " %{
-    eval -save-regs '/|' %{
-        try %{ delete-buffer *filetree* }
-        reg / "^\Q./%val{bufname}\E$"
-        edit -scratch *filetree*
-        reg '|' %opt{filetree_find_cmd}
-        exec '<a-!><ret>'
-        exec 'ggd'
-        # Center view on previous file
-        try %{ exec '/<ret>vc' }
-        addhl buffer/ dynregex '%opt{filetree_open_files}' 0:FileTreeOpenFiles
-        addhl buffer/ regex '^([^\n]+/)([^/\n]+)$' 1:FileTreeDirName 2:FileTreeFileName
-        map buffer normal <ret> :filetree-open-files<ret>
+    eval %sh{
+        out=$(mktemp --directory)
+        fifo=$out/fifo
+        mkfifo $fifo
+        (eval "$kak_opt_filetree_find_cmd" > $fifo) < /dev/null > /dev/null 2>&1 &
+        echo "
+            try %{ delete-buffer *filetree* }
+            edit -fifo $fifo *filetree*
+            # Center view on previous file
+            hook -once window NormalIdle '' %{ eval -save-regs / %{
+                reg / %{^\Q./$kak_bufname\E$}
+                try %{ exec /<ret> }
+            }}
+            hook -always -once buffer BufCloseFifo '' %{ nop %sh{ rm $out/fifo; rmdir $out } }
+        "
     }
+    addhl buffer/ dynregex '%opt{filetree_open_files}' 0:FileTreeOpenFiles
+    addhl buffer/ regex '^([^\n]+/)([^/\n]+)$' 1:FileTreeDirName 2:FileTreeFileName
+    map buffer normal <ret> :filetree-open-files<ret>
 }
 
 def -hidden filetree-buflist-to-regex -params 0..1 %{
