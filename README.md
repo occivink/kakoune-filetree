@@ -16,7 +16,7 @@ From the `*filetree*` buffer, you can open files by pressing <kbd>Return</kbd>. 
 
 ## Customization
 
-The option `filetree_find_cmd` is the command that is run to generate the list of files. It defaults to `find .  -not -type d -and -not -path "*/\.*"` (only print files, exclude hidden ones).
+The option `filetree_find_cmd` is the command that is run to generate the list of files. It defaults to `find . -not -type d -and -not -path "*/\.*"` (only print files, exclude hidden ones).
 
 There are a few faces that can be changed:
 * `FileTreeOpenFiles`: Used for files that have an open buffers (`black,yellow`)
