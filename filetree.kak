@@ -1,5 +1,5 @@
 decl -docstring "Name of the client in which all source code jumps will be executed" str jumpclient
-decl str filetree_find_cmd 'find . -not -type d -and -not -path "*/\.*"'
+decl str filetree_find_cmd 'find . -not -type d -and -not -path "*/.*"'
 
 decl -hidden str filetree_open_files
 
