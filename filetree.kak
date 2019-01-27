@@ -23,7 +23,7 @@ Buffers to the files can be opened using <ret>.
         hook -always -once buffer BufCloseFifo .* "nop %%sh{ rm '%reg{t}' }; exec ged"
         addhl buffer/ dynregex '%opt{filetree_open_files}' 0:FileTreeOpenFiles
         addhl buffer/ regex '^([^\n]+/)([^/\n]+)$' 1:FileTreeDirName 2:FileTreeFileName
-        map buffer normal <ret> :filetree-open-files<ret>
+        map buffer normal <ret> ': filetree-open-files<ret>'
     }
 }
 
