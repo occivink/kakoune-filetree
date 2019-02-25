@@ -27,31 +27,34 @@ Buffers to the files can be opened using <ret>.
     }
 }
 
-def -hidden filetree-buflist-to-regex -params 0..1 %{
-    # try to avoid using a shell scope if *filetree* is not open
-    try %{ eval -buffer *filetree* %{
-        set buffer filetree_open_files %sh{
-            discarded_bufname=$1
-            eval set -- "$kak_buflist"
-            first=1
-            for bufname do
-                if [ "$bufname" != "$discarded_bufname" ]; then
+def -hidden filetree-buflist-to-regex -params ..1 %{
+    try %{
+        # eval to avoid using a shell scope if *filetree* is not open
+        eval -buffer *filetree* %{
+            set-option buffer filetree_open_files %sh{
+                exclude="$1"
+                eval set -- "$kak_buflist"
+                first=1
+                printf '^\./('
+                for buffer do
+                    if [ "$buffer" = "$exclude" ]; then
+                        continue
+                    fi
                     if [ "$first" -eq 1 ]; then
                         first=0
                     else
                         printf '|'
                     fi
-                    # \E is not foolproof as a buffer name may contain it, unfortunately
-                    # ideally we'd escape each regex special character but that's difficult
-                    printf '%s%s%s' '^\Q' "./${bufname}" '\E$'
-                fi
-            done
+                    printf "%s%s%s" "\Q" "$buffer" "\E"
+                done
+                printf ')$'
+            }
         }
-    }}
+    }
 }
 
 hook global BufCreate .* %{ filetree-buflist-to-regex }
-hook global BufClose  .* %{ filetree-buflist-to-regex %val{hook_param} }
+hook global BufClose  .* %{ filetree-buflist-to-regex %val{bufname} }
 
 def -hidden filetree-open-files %{
     exec '<a-s>'
