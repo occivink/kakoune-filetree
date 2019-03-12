@@ -63,7 +63,10 @@ def -hidden filetree-open-files %{
         # don't -existing, so that this can be used to create files
         eval -draft %{ edit %reg{.} }
     }
-    exec '<space>;<a-x>H'
-    eval -try-client %opt{jumpclient} %{ buffer %reg{.} }
+    eval -save-regs 'f' %{
+        exec '<space>;<a-x>H'
+        reg f %reg{.}
+        eval -try-client %opt{jumpclient} %{ buffer %reg{f} }
+    }
     try %{ focus %opt{jumpclient} }
 }
