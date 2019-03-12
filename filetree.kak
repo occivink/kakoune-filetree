@@ -45,7 +45,7 @@ def -hidden filetree-buflist-to-regex -params ..1 %{
                     else
                         printf '|'
                     fi
-                    printf "%s%s%s" "\Q" "$buffer" "\E"
+                    printf "%s%s%s" '\Q' "$buffer" '\E'
                 done
                 printf ')$'
             }
