@@ -1,5 +1,8 @@
 declare-option -docstring "Name of the client in which all source code jumps will be executed" str jumpclient
-declare-option str filetree_find_cmd 'find . -not -type d -and -not -path "*/.*"'
+declare-option -docstring "name of the client in which utilities display information" str toolsclient
+
+declare-option -docstring "Command used to populate the *filetree* buffer" \
+    str filetree_find_cmd 'find . -not -type d -and -not -path "*/.*"'
 
 declare-option -hidden str filetree_directory
 declare-option -hidden regex filetree_open_files
@@ -12,20 +15,22 @@ define-command filetree-switch-or-start -docstring "
 Switch to the *filetree* buffer.
 If the *filetree* buffer does not exist, or the kakoune directory has changed,
 it is generated from scratch.
-"%{
+" %{
     try %{
-        buffer *filetree*
-        eval %sh{ [ "$kak_opt_filetree_directory" != "$(pwd)" ] && printf 'fail' }
+        eval -try-client %opt{toolsclient} %{
+            buffer *filetree*
+            eval %sh{ [ "$kak_opt_filetree_directory" != "$(pwd)" ] && printf 'fail' }
+        }
     } catch %{
         filetree
     }
 }
 
 define-command filetree -docstring "
-Open a scratch buffer with all paths returned by the specified command.
+Open a scratch *filetree* buffer with all paths returned by the specified command.
 Buffers to the files can be opened using <ret>.
 " %{
-    eval -save-regs t %{
+    eval -try-client %opt{toolsclient} -save-regs t %{
         set-register t %sh{
             fifo=$(mktemp -u)
             mkfifo "$fifo"
@@ -35,6 +40,7 @@ Buffers to the files can be opened using <ret>.
         try %{ delete-buffer *filetree* }
         edit -fifo %reg{t} *filetree*
         set-option buffer filetree_directory %sh{ pwd }
+        # no need for complex escaping, since 'mktemp' should generate a safe path
         hook -always -once buffer BufCloseFifo .* "nop %%sh{ rm '%reg{t}' }; exec ged"
         add-highlighter buffer/ dynregex '%opt{filetree_open_files}' 0:FileTreeOpenFiles
         add-highlighter buffer/ regex '^([^\n]+/)([^/\n]+)$' 1:FileTreeDirName 2:FileTreeFileName
