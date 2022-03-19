@@ -14,6 +14,8 @@ Simply call `:filetree`. A new buffer will be open with all files found below (r
 
 From the `*filetree*` buffer, you can open files by pressing <kbd>Return</kbd>. You can also use this to create files: enter a new filename in the buffer, and open it with <kbd>Return</kbd>.
 
+In addition, a command `:filetree-edit` is added. It proposes completions using the content of the `*filetree*` buffer and simply calls `edit` on the specified file
+
 ## Customization
 
 The option `filetree_find_cmd` is the command that is run to generate the list of files. It defaults to `find . -not -type d -and -not -path "*/.*"` (only print files, exclude hidden ones).

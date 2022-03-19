@@ -26,6 +26,19 @@ it is generated from scratch.
     }
 }
 
+define-command filetree-edit -params 1.. -docstring "
+Edit the specified file. The completions are provided by the *filetree* buffer.
+" %{
+    edit %arg{@}
+}
+
+try %{ # complete-command has not yet been released => try block
+    complete-command -menu filetree-edit shell-script-candidates %{
+        echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
+        cat "$kak_response_fifo"
+    }
+}
+
 define-command filetree -docstring "
 Open a scratch *filetree* buffer with all paths returned by the specified command.
 Buffers to the files can be opened using <ret>.
