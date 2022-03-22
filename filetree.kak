@@ -93,12 +93,12 @@ hook global BufClose  .* %{ filetree-buflist-to-regex %val{bufname} }
 define-command -hidden filetree-open-files %{
     exec '<a-s>'
     eval -draft -itersel %{
-        exec ';<a-x>H'
+        exec ';xH'
         # don't -existing, so that this can be used to create files
         eval -draft %{ edit %reg{.} }
     }
     eval -save-regs 'f' %{
-        exec '<space>;<a-x>H'
+        exec '<space>;xH'
         set-register f %reg{.}
         eval -try-client %opt{jumpclient} buffer '%reg{f}'
     }
