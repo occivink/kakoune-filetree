@@ -98,7 +98,7 @@ define-command -hidden filetree-open-files %{
         eval -draft %{ edit %reg{.} }
     }
     eval -save-regs 'f' %{
-        exec '<space>;xH'
+        exec ',;xH'
         set-register f %reg{.}
         eval -try-client %opt{jumpclient} buffer '%reg{f}'
     }

@@ -1,5 +1,7 @@
 # kakoune-filetree
 
+**Warning**: For kakoune version 2021.11.08 and earlier, the master branch of this plugin will not work. The latest commit compatible with these versions is c1b3f4b35cd0a0737dc7825a69a86d772a226321.
+
 [Kakoune](http://kakoune.org) plugin to view and navigate files.
 
 [![Demo](https://asciinema.org/a/160945.png)](https://asciinema.org/a/160945)
