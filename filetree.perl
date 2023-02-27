@@ -122,7 +122,7 @@ if ($operation eq "flatten") {
         if ($first == 1) {
             $first = 0;
         } else {
-            while ($input =~ m/\G(?:(│)  |( )  ) /gc) {
+            while ($input =~ m/\G(?:(│)\xc2\xa0\xc2\xa0|( )  ) /gc) {
                 $out .= ($1 or $2) . ' ' x ($repetition + 1);
             }
             if ($input !~ m/\G(└|├)(─)─ /gc) {

@@ -80,6 +80,7 @@ define-command filetree-get-parent-dir %{
         try %{
             exec ';x1s(^[│ ]+)[└├]─* <ret>'
             exec "<a-/>^(?!%val{selection})([^\n]*?)/$<ret>"
+            filetree-select-path-component
         } catch %{
             exec ggxH
         }
