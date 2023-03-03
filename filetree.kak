@@ -60,6 +60,21 @@ define-command filetree -params .. -docstring '
         add-highlighter buffer/ ranges filetree_open_files
 
         map buffer normal <ret> ': filetree-open-files<ret>'
+        map buffer normal <a-up> ': filetree-select-prev-sibling<ret>'
+        map buffer normal <a-down> ': filetree-select-next-sibling<ret>'
+        map buffer normal <a-left> ': filetree-select-parent-dir<ret>'
+        map buffer normal <a-right> ': filetree-select-first-child<ret>'
+    }
+}
+
+define-command filetree-select-open-files %{
+    eval echo -debug -- -timestamp %sh{
+        eval set -- $kak_opt_filetree_open_files
+        printf '''%s''' "$1"
+        shift
+        for val do
+            printf ' ''%s''' "${val%|*}"
+        done
     }
 }
 
@@ -69,7 +84,7 @@ define-command filetree-create-file %{
 define-command filetree-create-directory %{
 }
 
-define-command filetree-get-parent-dir %{
+define-command filetree-select-parent-dir %{
     eval -itersel %{
         try %{
             # TODO top parent is not always ./
@@ -87,8 +102,52 @@ define-command filetree-get-parent-dir %{
     }
 }
 
+define-command filetree-select-next-sibling %{
+    eval -itersel -save-regs '/' %{
+        exec ';x'
+        exec '1s^([ │]*)[└├]<ret>'
+        try %{
+            exec '<a-k>\A[└├]\z<ret>'
+            reg slash "\n(([^\n]*\n)*?(^[└├]))?"
+        } catch %{
+            reg slash "\n((^%val{selection}[^\n]*\n)*?(^%val{selection}[└├]))?"
+        }
+        exec 'gh/<ret>'
+        exec '<a-K>\A\n\z<ret>' # if we didn't match anything, fail
+        exec ';'
+        filetree-select-path-component
+    }
+}
+define-command filetree-select-prev-sibling %{
+    eval -itersel -save-regs '/' %{
+        exec ';x'
+        exec '1s^([ │]*)[└├]<ret>'
+        try %{
+            exec '<a-k>\A[└├]\z<ret>'
+            reg slash "((^├[^\n]*\n)(^[^\n]*\n)*?)?^."
+        } catch %{
+            reg slash "((^%val{selection}├[^\n]*\n)(^%val{selection}[^\n]*\n)*?)?^."
+        }
+        exec 'gl<a-/><ret>'
+        exec '<a-K>\A^.\z<ret>' # if we didn't match anything, fail
+        exec '<a-;>;'
+        filetree-select-path-component
+    }
+}
 
-define-command filetree-select-open-files %{
+define-command filetree-select-first-child %{
+    eval -itersel %{
+        exec ';x'
+        exec -draft '<a-k>/$<ret>'
+        try %{
+            exec -draft 'ghHs\A.\z<ret>'
+            exec 'j'
+        } catch %{
+            exec 's^[ │]*[└├]─* <ret>'
+            exec "jx<a-k>\A^[│ ]{%val{selection_length}}<ret>"
+        }
+        filetree-select-path-component
+    }
 }
 
 define-command -hidden filetree-open-file %{
@@ -97,16 +156,16 @@ define-command -hidden filetree-open-file %{
             exec ','
             reg p %val{selection}
             try %{
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-get-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
             }
         }
         edit -existing %reg{p}
@@ -170,3 +229,4 @@ complete-command -menu filetree-edit shell-script-candidates %{
     echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
     perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten' < "$kak_response_fifo"
 }
+
