@@ -125,8 +125,9 @@ Switches:
 }
 
 define-command filetree-select-open-files %{
-    eval echo -debug -- -timestamp %sh{
-        eval set -- $kak_opt_filetree_open_files
+    eval select -timestamp %sh{
+        # TODO might not work with filenames containing '
+        eval set -- "$kak_quoted_opt_filetree_open_files"
         printf '''%s''' "$1"
         shift
         for val do
