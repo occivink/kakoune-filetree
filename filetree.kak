@@ -13,7 +13,7 @@ declare-option -hidden range-specs filetree_open_files
 declare-option int filetree_indentation_level 3
 
 face global FileTreeOpenFiles black,yellow
-face global FileTreePipesColor rgb:909090,default
+face global FileTreePipesColor rgb:606060,default
 face global FileTreeDirColor blue,default+b
 face global FileTreeFileName default,default
 
@@ -258,7 +258,7 @@ hook global WinDisplay '^\*filetree\*$' %{
 hook global BufCreate .* %{ set global filetree_highlight_dirty true }
 hook global BufClose  .* %{ set global filetree_highlight_dirty true }
 
-define-command filetree-refresh-files-highlight %{
+define-command -hidden filetree-refresh-files-highlight %{
     try %{
         eval -draft -buffer *filetree* %{
             eval select %sh{
