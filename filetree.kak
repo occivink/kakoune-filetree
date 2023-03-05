@@ -7,7 +7,7 @@ declare-option -docstring "name of the client in which utilities display informa
 
 
 declare-option -hidden bool filetree_highlight_dirty
-declare-option -hidden str filetree_directory
+declare-option -hidden str filetree_root_directory
 declare-option -hidden range-specs filetree_open_files
 
 declare-option int filetree_indentation_level 3
@@ -25,7 +25,7 @@ it is generated from scratch.
     try %{
         eval -try-client %opt{toolsclient} %{
             buffer *filetree*
-            eval %sh{ [ "$kak_opt_filetree_directory" != "$(pwd)" ] && printf 'fail' }
+            eval %sh{ [ "$kak_opt_filetree_root_directory" != "$(pwd)" ] && printf 'fail' }
         }
     } catch %{
         filetree %arg{@}
@@ -33,26 +33,80 @@ it is generated from scratch.
 }
 
 define-command filetree -params .. -docstring '
-' %{
+filetree [<switches>] [directory]: TODO
+Switches:
+    -files-first: TODO
+    -dirs-first: TODO
+    -consider-gitignore: TODO
+    -no-empty-dirs: TODO
+    -show-hidden: TODO
+    -depth: TODO
+' -shell-script-candidates %{
+    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -depth './' */
+} %{
     eval -save-regs 't' %{
-        # TODO relative dirs
-        try %{ delete-buffer *filetree* }
-        set-register t %sh{
+        eval %sh{
+            sorting=''
+            prune=''
+            gitignore=''
+            depth=''
+            directory=''
+            hidden=''
+
+            arg_num=0
+            accept_switch='y'
+            while [ $# -ne 0 ]; do
+                arg_num=$((arg_num + 1))
+                arg=$1
+                shift
+                if [ $accept_switch = 'y' ]; then
+                    got_switch='y'
+                    if [ "$arg" = '-files-first' ]; then
+                        sorting='--filesfirst'
+                    elif [ "$arg" = '-dirs-first' ]; then
+                        sorting='--dirsfirst'
+                    elif [ "$arg" = '-no-empty-dirs' ]; then
+                        prune='--prune'
+                    elif [ "$arg" = '-show-hidden' ]; then
+                        hidden='-a'
+                    elif [ "$arg" = '-consider-gitignore' ]; then
+                        gitignore='--gitignore'
+                    elif [ "$arg" = '-depth' ]; then
+                        if [ $# -eq 0 ]; then
+                            echo 'fail "Missing argument to -depth"'
+                            exit 1
+                        fi
+                        arg_num=$((arg_num + 1))
+                        depth="-L $1"
+                        shift
+                    elif [ "$arg" = '--' ]; then
+                        accept_switch='n'
+                    else
+                        got_switch='n'
+                    fi
+                    [ $got_switch = 'y' ] && continue
+                fi
+                if [ "$directory" != '' ]; then
+                    printf "fail \"Unknown argument '%%arg{%s}'\"" "$arg_num"
+                    exit 1
+                elif [ "$arg" != '' ]; then
+                    directory="$arg"
+                else
+                    printf "fail \"Invalid directory '%%arg{%s}'\"" "$arg_num"
+                    exit 1
+                fi
+            done
+            [ "$directory" = '' ] && directory='.'
             fifo=$(mktemp -u)
             mkfifo "$fifo"
+            # $kak_opt_filetree_indentation_level <- need to let the script access this var
             perl_script="${kak_opt_filetree_script_path%/*}/filetree.perl"
-            # TODO args
-            # -dirs-first
-            # -files-first
-            # -consider-gitignore
-            # -max-depth
-            # -no-empty-dirs
-            # $kak_opt_filetree_indentation_level
-            (tree -p --filesfirst | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
-            printf '%s' "$fifo"
+            (tree -p $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
+            printf "set-register t '%s'" "$fifo"
         }
+        try %{ delete-buffer *filetree* }
         edit -fifo %reg{t} *filetree*
-        set-option buffer filetree_directory %sh{ pwd }
+        set-option buffer filetree_root_directory %sh{ pwd }
         hook -always -once buffer BufCloseFifo .* "nop %%sh{ rm '%reg{t}' }; exec ged; filetree-refresh-files-highlight"
 
         # highlight tree part
