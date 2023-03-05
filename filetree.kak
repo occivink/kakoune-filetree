@@ -181,6 +181,7 @@ define-command filetree-select-next-sibling %{
 }
 define-command filetree-select-prev-sibling %{
     eval -itersel -save-regs '/' %{
+        # TODO revisit when kakoune issue #4859 is fixed
         exec ';x'
         exec '1s^([ │]*)[└├]<ret>'
         try %{
@@ -217,6 +218,7 @@ define-command -hidden filetree-open-file %{
             exec ','
             reg p %val{selection}
             try %{
+                # TODO not exactly elegant
                 filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
                 filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
                 filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
@@ -281,7 +283,7 @@ define-command -hidden filetree-refresh-files-highlight %{
 }
 
 define-command filetree-edit -params 1.. -docstring "
-Edit the specified file. The completions are provided by the *filetree* buffer.
+Edit the specified files. The completions are provided by the *filetree* buffer.
 " %{
     edit %arg{@}
 }
