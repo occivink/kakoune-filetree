@@ -1,7 +1,10 @@
+declare-option -hidden str filetree_script_path %val{source}
+
+provide-module filetree %{
+
 declare-option -docstring "Name of the client in which all source code jumps will be executed" str jumpclient
 declare-option -docstring "name of the client in which utilities display information" str toolsclient
 
-declare-option -hidden str filetree_script_path %val{source}
 
 declare-option -hidden bool filetree_highlight_dirty
 declare-option -hidden str filetree_directory
@@ -230,3 +233,6 @@ complete-command -menu filetree-edit shell-script-candidates %{
     perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten' < "$kak_response_fifo"
 }
 
+}
+
+require-module filetree
