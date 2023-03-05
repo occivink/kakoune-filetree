@@ -149,8 +149,7 @@ define-command filetree-create-directory %{
 define-command filetree-select-parent-dir %{
     eval -itersel %{
         try %{
-            # TODO top parent is not always ./
-            exec -draft ';x<a-K>^./\n<ret>'
+            exec -draft ';ghH<a-k>\n.<ret>'
         } catch %{
             fail 'Already at top parent'
         }
@@ -202,7 +201,7 @@ define-command filetree-select-first-child %{
         exec ';x'
         exec -draft '<a-k>/$<ret>'
         try %{
-            exec -draft 'ghHs\A.\z<ret>'
+            exec -draft 'ghH<a-k>\A.\z<ret>'
             exec 'j'
         } catch %{
             exec 's^[ │]*[└├]─* <ret>'
