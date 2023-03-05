@@ -97,6 +97,10 @@ Switches:
                 fi
             done
             [ "$directory" = '' ] && directory='.'
+            # strip trailing '/'
+            while [ "$directory" != "${directory%/}" ]; do
+                directory=${directory%/}
+            done
             fifo=$(mktemp -u)
             mkfifo "$fifo"
             # $kak_opt_filetree_indentation_level <- need to let the script access this var
