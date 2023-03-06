@@ -135,10 +135,10 @@ Switches:
         add-highlighter buffer/ regex '^(?:[│├──└ ]+ )(\n)' 1:FileTreeEmptyName
         add-highlighter buffer/ ranges filetree_open_files
 
-        map buffer normal <ret> ': filetree-open-files<ret>'
+        map buffer normal <ret> ': filetree-open-selected-files<ret>'
         map buffer normal <a-up> ': filetree-select-prev-sibling<ret>'
         map buffer normal <a-down> ': filetree-select-next-sibling<ret>'
-        map buffer normal <a-left> ': filetree-select-parent-dir<ret>'
+        map buffer normal <a-left> ': filetree-select-parent-directory<ret>'
         map buffer normal <a-right> ': filetree-select-first-child<ret>'
     }
 }
@@ -199,7 +199,7 @@ define-command filetree-create-child-entry %{
     exec 'gll'
 }
 
-define-command filetree-select-parent-dir %{
+define-command filetree-select-parent-directory %{
     eval -itersel %{
         try %{
             exec -draft ';ghH<a-k>\n.<ret>'
@@ -265,40 +265,49 @@ define-command filetree-select-first-child %{
     }
 }
 
-define-command -hidden filetree-open-file %{
+define-command -hidden filetree-open-selected-file -params ..1 %{
     eval -save-regs 'p' %{
         eval -draft %{
             exec ','
             reg p %val{selection}
             try %{
                 # TODO not exactly elegant
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
-                filetree-select-parent-dir; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
+                filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
             }
         }
-        edit -existing %reg{p}
+        try %{
+            edit -existing %reg{p}
+        } catch %{
+            eval %sh{ [ "$1" = '-create' ] || echo fail }
+            edit %reg{p}
+        }
     }
 }
 
-define-command filetree-open-files %{
+define-command filetree-open-selected-files -params ..1 -docstring '
+filetree-open-selected-files
+' -shell-script-candidates %{
+    printf "%s\n" '-create'
+} %{
     filetree-select-path-component
     exec '<a-K>/\z<ret>'
     try %{
         # open all non-main selections in a draft context
         eval -draft %{
             exec '<a-,>'
-            eval -itersel %{ eval -draft filetree-open-file }
+            eval -itersel %{ eval -draft -verbatim filetree-open-selected-file %arg{@} }
         }
     }
-    filetree-open-file
+    filetree-open-selected-file %arg{@}
 }
 
 define-command filetree-select-path-component %{
