@@ -155,10 +155,48 @@ define-command filetree-select-open-files %{
     }
 }
 
-define-command filetree-create-file %{
+define-command filetree-create-sibling-entry %{
+    # TODO handle root dir: forbid entirely?
+    filetree-select-path-component
+    try %{
+        exec -draft '<a-k>/\z<ret>'
+        exec 'xyP'
+        exec -draft 'ghh/[├└]<ret>r├'
+    } catch %{
+        exec 'xyp'
+        exec -draft 'ghh/[├└]<ret>r├<a-C><a-(>'
+    }
+    exec 'ghh/[├└]─* <ret>l'
+    try %{ exec '<a-K>\n<ret>GLd' }
 }
 
-define-command filetree-create-directory %{
+define-command filetree-create-child-entry %{
+    # TODO handle root dir
+    filetree-select-path-component
+    # fail if we're not on a directory
+    try %{
+        exec -draft '<a-k>/\z<ret>'
+    } catch %{
+        fail 'Cannot create child of a regular file'
+    }
+    exec 'xyp'                # copy line below
+    exec 'ghh/[├└]─* <ret>'   # select end of pipe from the new line
+    try %{ exec -draft 'l<a-K>\n<ret>GLd' } # remove filename
+    exec 'yP'                 # copy-prepend it
+    exec 'r<space><a-;>;k'    # replace it with space, and select the first character
+    try %{
+        exec '<a-k>├<ret>jr│' # select the one just above: if it's ├, turn into │
+    } catch %{
+        exec 'r└j'            # otherwise into └
+    }
+    exec '/[├└]<ret>'                 # select the real pipe connector
+    try %{
+        exec -draft 'j<a-k>[├└]<ret>' # and depending on whether it's the last child
+        exec 'r├'                     # replace with ├
+    } catch %{
+        exec 'r└'                     # or └
+    }
+    exec 'gll'
 }
 
 define-command filetree-select-parent-dir %{
