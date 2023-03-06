@@ -27,7 +27,7 @@ it is generated from scratch.
     try %{
         eval -try-client %opt{toolsclient} %{
             buffer *filetree*
-            eval %sh{ [ "$kak_opt_filetree_root_directory" != "$(pwd)" ] && printf 'fail' }
+            eval %sh{ [ "$kak_opt_filetree_root_directory" != "$PWD" ] && printf 'fail' }
         }
     } catch %{
         filetree %arg{@}
