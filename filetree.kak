@@ -5,7 +5,6 @@ provide-module filetree %{
 declare-option -docstring "Name of the client in which all source code jumps will be executed" str jumpclient
 declare-option -docstring "name of the client in which utilities display information" str toolsclient
 
-
 declare-option -hidden bool filetree_highlight_dirty
 declare-option -hidden str filetree_root_directory
 declare-option -hidden range-specs filetree_open_files
@@ -310,5 +309,3 @@ complete-command -menu filetree-edit shell-script-candidates %{
 }
 
 }
-
-require-module filetree
