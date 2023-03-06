@@ -16,6 +16,7 @@ face global FileTreeOpenFiles black,yellow
 face global FileTreePipesColor rgb:606060,default
 face global FileTreeDirColor blue,default+b
 face global FileTreeFileName default,default
+face global FileTreeEmptyName black,red
 
 define-command filetree-switch-or-start -params .. -docstring "
 Switch to the *filetree* buffer.
@@ -116,8 +117,9 @@ Switches:
         # highlight tree part
         add-highlighter buffer/ regex '^([│├──└ ]+) ' 1:FileTreePipesColor
         # highlight directories (using the /)
-        add-highlighter buffer/ regex '^([│├──└ ]+ )?([^\n]*?)/$' 2:FileTreeDirColor
-        add-highlighter buffer/ regex '^([│├──└ ]+ )([^\n/]*?)$' 2:FileTreeFileName
+        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )?([^\n]*?)/$' 1:FileTreeDirColor
+        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )([^\n/]*?)$' 1:FileTreeFileName
+        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )(\n)' 1:FileTreeEmptyName
         add-highlighter buffer/ ranges filetree_open_files
 
         map buffer normal <ret> ': filetree-open-files<ret>'
