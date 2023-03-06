@@ -111,7 +111,7 @@ Switches:
             mkfifo "$fifo"
             # $kak_opt_filetree_indentation_level <- need to let the script access this var
             perl_script="${kak_opt_filetree_script_path%/*}/filetree.perl"
-            (tree -p $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
+            (tree -p -v $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
             printf "set-register t '%s'" "$fifo"
         }
         try %{ delete-buffer *filetree* }
