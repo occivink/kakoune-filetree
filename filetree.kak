@@ -114,9 +114,17 @@ Switches:
             printf "set-register t '%s'" "$fifo"
         }
         try %{ delete-buffer *filetree* }
+        set-option global filetree_highlight_dirty false
+
         edit -fifo %reg{t} *filetree*
-        set-option buffer filetree_root_directory %sh{ pwd }
-        hook -always -once buffer BufCloseFifo .* "nop %%sh{ rm '%reg{t}' }; exec ged; filetree-refresh-files-highlight"
+        set-option buffer filetree_root_directory %sh{ printf '%s' "$PWD" }
+        # put hook in double quotes to interpolate %reg{t}
+        hook -always -once buffer BufCloseFifo .* "
+            nop %%sh{ rm '%reg{t}' }
+            exec ged
+            set-option global filetree_highlight_dirty true
+            filetree-refresh-files-highlight
+        "
 
         # highlight tree part
         add-highlighter buffer/ regex '^([│├──└ ]+) ' 1:FileTreePipesColor
