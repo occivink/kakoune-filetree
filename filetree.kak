@@ -155,7 +155,7 @@ define-command filetree-select-open-files %{
     }
 }
 
-define-command filetree-create-sibling-entry %{
+define-command filetree-create-sibling %{
     # TODO handle root dir: forbid entirely?
     filetree-select-path-component
     try %{
@@ -170,7 +170,7 @@ define-command filetree-create-sibling-entry %{
     try %{ exec '<a-K>\n<ret>GLd' }
 }
 
-define-command filetree-create-child-entry %{
+define-command filetree-create-child %{
     # TODO handle root dir
     filetree-select-path-component
     # fail if we're not on a directory
