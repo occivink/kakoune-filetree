@@ -18,11 +18,13 @@ face global FileTreeDirColor blue,default+b
 face global FileTreeFileName default,default
 face global FileTreeEmptyName black,red
 
-define-command filetree-switch-or-start -params .. -docstring "
+define-command filetree-switch-or-start -params .. -docstring '
 Switch to the *filetree* buffer.
 If the *filetree* buffer does not exist, or the kakoune directory has changed,
 it is generated from scratch.
-" %{
+' -shell-script-candidates %{
+    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -depth './' */
+} %{
     try %{
         eval -try-client %opt{toolsclient} %{
             buffer *filetree*
