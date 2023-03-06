@@ -102,6 +102,10 @@ Switches:
             while [ "$directory" != "${directory%/}" ]; do
                 directory=${directory%/}
             done
+            if [ ! -d "$directory" ]; then
+                printf "fail \"Directory '%%arg{%s}' does not exist\"" "$arg_num"
+                exit 1
+            fi
             fifo=$(mktemp -u)
             mkfifo "$fifo"
             # $kak_opt_filetree_indentation_level <- need to let the script access this var
