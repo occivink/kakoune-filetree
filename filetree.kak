@@ -43,8 +43,10 @@ Switches:
     -no-empty-dirs: TODO
     -show-hidden: TODO
     -depth: TODO
+    -only-dirs: TODO
 ' -shell-script-candidates %{
-    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -depth './' */
+    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs \
+    -depth -only-dirs './' */
 } %{
     eval -save-regs 't' %{
         eval %sh{
@@ -54,6 +56,7 @@ Switches:
             depth=''
             directory=''
             hidden=''
+            only_dirs=''
 
             arg_num=0
             accept_switch='y'
@@ -73,6 +76,8 @@ Switches:
                         hidden='-a'
                     elif [ "$arg" = '-consider-gitignore' ]; then
                         gitignore='--gitignore'
+                    elif [ "$arg" = '-only-dirs' ]; then
+                        only_dirs="-P '*/'"
                     elif [ "$arg" = '-depth' ]; then
                         if [ $# -eq 0 ]; then
                             echo 'fail "Missing argument to -depth"'
@@ -111,7 +116,7 @@ Switches:
             mkfifo "$fifo"
             # $kak_opt_filetree_indentation_level <- need to let the script access this var
             perl_script="${kak_opt_filetree_script_path%/*}/filetree.perl"
-            (tree -p -v $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
+            (tree -p -v $only_dirs $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
             printf "set-register t '%s'" "$fifo"
         }
         try %{ delete-buffer *filetree* }
@@ -356,3 +361,5 @@ complete-command -menu filetree-edit shell-script-candidates %{
 }
 
 }
+
+require-module filetree

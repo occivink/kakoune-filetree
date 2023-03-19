@@ -15,7 +15,7 @@ The plugin has a dependency on `tree` as well as `perl`.
 
 Simply call `:filetree`. A new buffer will be open with all files found below the specified directory (Kakoune's current directory by default), presented in a tree-like structure.
 
-From the `*filetree*` buffer, you can open files by pressing <kbd>Return</kbd>.
+From the `*filetree*` buffer, you can open files by pressing <kbd>Return</kbd> (calling the command `filetree-open-selected-files`).
 
 The files that are open in buffers are highlighted with a special face.
 
