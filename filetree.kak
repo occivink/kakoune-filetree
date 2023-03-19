@@ -316,7 +316,7 @@ filetree-open-selected-files
 }
 
 define-command filetree-select-path-component %{
-    exec ';x1s^[│├─└ ]+ ([^\n]*)$<ret>'
+    exec ';x1s^[│ ]*[├└]─* (.*)\n<ret>'
 }
 
 hook global WinDisplay '^\*filetree\*$' %{
