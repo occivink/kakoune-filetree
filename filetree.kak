@@ -133,11 +133,11 @@ Switches:
         "
 
         # highlight tree part
-        add-highlighter buffer/ regex '^([│├──└ ]+) ' 1:FileTreePipesColor
+        add-highlighter buffer/ regex '^[│ ]*[├└]─* ' 0:FileTreePipesColor
         # highlight directories (using the /)
-        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )?([^\n]*?)/$' 1:FileTreeDirColor
-        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )([^\n/]*?)$' 1:FileTreeFileName
-        add-highlighter buffer/ regex '^(?:[│├──└ ]+ )(\n)' 1:FileTreeEmptyName
+        add-highlighter buffer/ regex '^(?:[│ ]*[├└]─* )?([^\n]*?)/$' 1:FileTreeDirColor
+        add-highlighter buffer/ regex '^(?:[│ ]*[├└]─* )([^\n/]*?)$' 1:FileTreeFileName
+        add-highlighter buffer/ regex '^(?:[│ ]*[├└]─* )(\n)' 1:FileTreeEmptyName
         add-highlighter buffer/ ranges filetree_open_files
 
         map buffer normal <ret> ': filetree-open-selected-files<ret>'
