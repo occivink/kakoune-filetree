@@ -239,7 +239,6 @@ define-command filetree-select-next-sibling %{
 }
 define-command filetree-select-prev-sibling %{
     eval -itersel -save-regs '/' %{
-        # TODO revisit when kakoune issue #4859 is fixed
         exec ';x'
         exec '1s^([ │]*)[└├]<ret>'
         try %{
@@ -266,6 +265,44 @@ define-command filetree-select-first-child %{
             exec 's^[ │]*[└├]─* <ret>'
             exec "jx<a-k>\A^[│ ]{%val{selection_length}}<ret>"
         }
+        filetree-select-path-component
+    }
+}
+
+define-command filetree-select-direct-children %{
+    eval -itersel -save-regs 'l' %{
+        exec ';x'
+        exec -draft '<a-k>/$<ret>'
+        try %{
+            exec -draft 'ghH<a-k>\A.\z<ret>'
+            reg l '0'
+            exec gh
+        } catch %{
+            exec 's^[ │]*[└├]─* <ret>'
+            reg l %val{selection_length}
+        }
+        exec "gll/(^[│ ]{%reg{l}}[^\n]+\n)*|.<ret>"
+        exec '<a-K>\A.\z<ret>'
+        exec "<a-s><a-k>^[│ ]{%reg{l}}[└├]<ret>"
+        filetree-select-path-component
+    }
+}
+
+define-command filetree-select-all-children %{
+    eval -itersel -save-regs 'l' %{
+        exec ';x'
+        exec -draft '<a-k>/$<ret>'
+        try %{
+            exec -draft 'ghH<a-k>\A.\z<ret>'
+            reg l '0'
+            exec gh
+        } catch %{
+            exec 's^[ │]*[└├]─* <ret>'
+            reg l %val{selection_length}
+        }
+        exec "gll/(^[│ ]{%reg{l}}[^\n]*\n)*|.<ret>"
+        exec '<a-K>\A.\z<ret>'
+        exec '<a-s>'
         filetree-select-path-component
     }
 }
