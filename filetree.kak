@@ -270,7 +270,7 @@ define-command filetree-select-first-child %{
     }
 }
 
-define-command -hidden filetree-open-selected-file -params ..1 %{
+define-command -hidden filetree-eval-on-fullpath -params 1 %{
     eval -save-regs 'p' %{
         eval -draft %{
             exec ','
@@ -289,6 +289,12 @@ define-command -hidden filetree-open-selected-file -params ..1 %{
                 filetree-select-parent-directory; reg p "%val{selection}%reg{p}"
             }
         }
+        eval %arg{1}
+    }
+}
+
+define-command -hidden filetree-open-selected-file -params ..1 %{
+    filetree-eval-on-fullpath %{
         try %{
             edit -existing %reg{p}
         } catch %{
