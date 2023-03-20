@@ -141,6 +141,7 @@ Switches:
         add-highlighter buffer/ ranges filetree_open_files
 
         map buffer normal <ret> ': filetree-open-selected-files<ret>'
+        map buffer normal <s-ret> ': filetree-open-selected-files -create<ret>'
         map buffer normal <a-up> ': filetree-select-prev-sibling<ret>'
         map buffer normal <a-down> ': filetree-select-next-sibling<ret>'
         map buffer normal <a-left> ': filetree-select-parent-directory<ret>'
