@@ -18,11 +18,11 @@ face global FileTreeFileName default,default
 face global FileTreeEmptyName black,red
 
 define-command filetree-switch-or-start -params .. -docstring '
-Switch to the *filetree* buffer.
-If the *filetree* buffer does not exist, or the kakoune directory has changed,
-it is generated from scratch.
+filetree-switch-or-start: switch to the *filetree* buffer.
+If it buffer does not exist, or the current kakoune directory has changed, it is generated from
+scratch. In this case, all arguments are forwarded to the ''filetree'' command.
 ' -shell-script-candidates %{
-    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -depth './' */
+    printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -show-hidden -depth './' */
 } %{
     try %{
         eval -try-client %opt{toolsclient} %{
@@ -35,18 +35,18 @@ it is generated from scratch.
 }
 
 define-command filetree -params .. -docstring '
-filetree [<switches>] [directory]: TODO
+filetree [<switches>] [<directory>]: open an interactive buffer representing the current directory
 Switches:
-    -files-first: TODO
-    -dirs-first: TODO
-    -consider-gitignore: TODO
-    -no-empty-dirs: TODO
-    -show-hidden: TODO
-    -depth: TODO
-    -only-dirs: TODO
+    -files-first: for each level, show files before directories
+    -dirs-first: for each level, show directories before files
+    -consider-gitignore: do not show any entries matched by gitignore rules
+    -no-empty-dirs: do not show empty directories
+    -show-hidden: show hidden files and directories
+    -depth <DEPTH>: only traverse the root directory up to <DEPTH> directories deep (unlimited by default)
+    -only-dirs: only show directories, not files
 ' -shell-script-candidates %{
     printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs \
-    -depth -only-dirs './' */
+    -show-hidden -depth -only-dirs './' */
 } %{
     eval -save-regs 't' %{
         eval %sh{
@@ -204,7 +204,9 @@ define-command filetree-create-child %{
     exec 'gll'
 }
 
-define-command filetree-select-parent-directory %{
+define-command filetree-select-parent-directory -docstring '
+filetree-select-next-sibling: in the *filetree* buffer, select the parent directory of the current element
+' %{
     eval -itersel %{
         try %{
             exec -draft ';ghH<a-k>\n.<ret>'
@@ -221,7 +223,9 @@ define-command filetree-select-parent-directory %{
     }
 }
 
-define-command filetree-select-next-sibling %{
+define-command filetree-select-next-sibling -docstring '
+filetree-select-next-sibling: in the *filetree* buffer, select the next element in the same directory
+' %{
     eval -itersel -save-regs '/' %{
         exec ';x'
         exec '1s^([ │]*)[└├]<ret>'
@@ -237,7 +241,9 @@ define-command filetree-select-next-sibling %{
         filetree-select-path-component
     }
 }
-define-command filetree-select-prev-sibling %{
+define-command filetree-select-prev-sibling -docstring '
+filetree-select-prev-sibling: in the *filetree* buffer, select the previous element in the same directory
+' %{
     eval -itersel -save-regs '/' %{
         exec ';x'
         exec '1s^([ │]*)[└├]<ret>'
@@ -254,7 +260,9 @@ define-command filetree-select-prev-sibling %{
     }
 }
 
-define-command filetree-select-first-child %{
+define-command filetree-select-first-child -docstring '
+filetree-select-first-child: in the *filetree* buffer, select the first element in the selected directory
+' %{
     eval -itersel %{
         exec ';x'
         exec -draft '<a-k>/$<ret>'
@@ -392,9 +400,10 @@ define-command -hidden filetree-refresh-files-highlight %{
     }
 }
 
-define-command filetree-edit -params 1.. -docstring "
-Edit the specified files. The completions are provided by the *filetree* buffer.
-" %{
+define-command filetree-edit -params 1.. -docstring '
+filetree-edit: edit the specified files.
+The completions are provided by the *filetree* buffer.
+' %{
     edit %arg{@}
 }
 

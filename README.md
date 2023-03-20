@@ -34,7 +34,7 @@ The `filetree-select-open-files` command can be used to select all files current
 
 ## Manipulation
 
-The `*filetree*` buffer can be modified by hand as long as the general structure is preserved (for example, certain irrelevant files or directories can be filtered out by hand).
+The `*filetree*` buffer can be modified by hand as long as the general tree-structure is preserved (for example, certain irrelevant files or directories can be filtered out by hand).
 
 The `*filetree*` buffer supports limited manipulation of the filesystem with the commands `filetree-create-child` and `filetree-create-sibling`. 
 Note that the two commands do not create the files themselves, they only adjust the buffer to keep the tree structure valid. The desired filename can then be typed out, and then opened with `filetree-open-selected-files -create`.
