@@ -346,29 +346,73 @@ define-command -hidden filetree-eval-on-fullpath -params 1 %{
 define-command -hidden filetree-open-selected-file -params ..1 %{
     filetree-eval-on-fullpath %{
         try %{
+            buffer %reg{p}
+        } catch %{
             edit -existing %reg{p}
+            reg e "x%reg{e}"
         } catch %{
             eval %sh{ [ "$1" = '-create' ] || echo fail }
             edit %reg{p}
+            reg c "x%reg{c}"
+        } catch %{
+            reg f "x%reg{f}"
         }
     }
 }
 
 define-command filetree-open-selected-files -params ..1 -docstring '
-filetree-open-selected-files
+filetree-open-selected-files [-create]: open the files currently selected
 ' -shell-script-candidates %{
     printf "%s\n" '-create'
 } %{
-    filetree-select-path-component
-    exec '<a-K>/\z<ret>'
-    try %{
-        # open all non-main selections in a draft context
-        eval -draft %{
-            exec '<a-,>'
-            eval -itersel %{ eval -draft -verbatim filetree-open-selected-file %arg{@} }
+    eval -save-regs 'cef' %{
+        reg e ''
+        reg c ''
+        reg f ''
+        filetree-select-path-component
+        exec '<a-K>/\z<ret>'
+        try %{
+            # open all non-main selections in a draft context
+            eval -draft %{
+                exec '<a-,>'
+                eval -itersel %{ eval -draft -verbatim filetree-open-selected-file %arg{@} }
+            }
+        }
+        filetree-open-selected-file %arg{@}
+        eval %sh{
+            # echo some "helpful" info
+            num_opened="${#kak_reg_e}"
+            num_created="${#kak_reg_c}"
+            num_failed="${#kak_reg_f}"
+            total=$(( num_opened + num_created + num_failed ))
+            [ "$total" -eq 0 ] && exit
+
+            str_opened="${num_opened} existing file"
+            [ "$num_opened" -ne 1 ] && str_opened="${str_opened}s"
+            str_created="${num_created} new file"
+            [ "$num_created" -ne 1 ] && str_created="${str_created}s"
+            str_failed="${num_failed} file"
+            [ "$num_failed" -ne 1 ] && str_failed="${str_failed}s"
+
+            printf "echo '"
+            if [ "$num_opened" -eq "$total" ]; then
+                printf "Opened %s" "$str_opened"
+            elif [ "$num_created" -eq "$total" ]; then
+                printf "Opened %s" "$str_created"
+            elif [ "$num_failed" -eq "$total" ]; then
+                printf "Failed to open %s" "$str_failed"
+            elif [ "$num_failed" -eq 0 ]; then # opened + created
+                printf "Opened %s, and %s" "$str_opened" "$str_created"
+            elif [ "$num_created" -eq 0 ]; then # opened + failed
+                printf "Opened %s, and failed to open %s" "$str_opened" "$str_failed"
+            elif [ "$num_opened" -eq 0 ]; then # created + failed
+                printf "Opened %s, and failed to open %s" "$str_created" "$str_failed"
+            else
+                printf "Opened %s, %s, and failed to open %s" "$str_opened" "$str_created" "$str_failed"
+            fi
+            printf "'"
         }
     }
-    filetree-open-selected-file %arg{@}
 }
 
 define-command filetree-select-path-component %{
