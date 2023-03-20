@@ -24,11 +24,12 @@ The files that are open in buffers are highlighted with a special face.
 The `filetree-edit` command can be used for opening files, using the fuzzy matching engine of Kakoune. The completions are generated using the content of the `*filetree*` buffer: any file in the tree is proposed as a possible completion. This command can be used from any context, as long as the `*filetree*` buffer exists.
 
 The following commands can be used to navigate the files and directories depending on their relationship:  
-* `filetree-select-prev-sibling`: select next entry in the same directory as the selected entry  
-* `filetree-select-next-sibling`: select previous entry in the same directory as the selected entry  
-* `filetree-select-parent-directory`: select parent directory of the selected entry  
-* `filetree-select-first-child`: select first entry in the selected directory  
-By default, they are respectively bound to `<a-up>`, `<a-down>`, `<a-left>`, `<a-right>`
+* `filetree-select-prev-sibling`: select next entry in the same directory as the selected entry (`<a-up>`)  
+* `filetree-select-next-sibling`: select previous entry in the same directory as the selected entry (`<a-down>`)  
+* `filetree-select-parent-directory`: select parent directory of the selected entry (`<a-left>`)  
+* `filetree-select-first-child`: select first entry in the selected directory (`<a-right>`)  
+* `filetree-select-direct-children`: select all entries directly in the selected directory  
+* `filetree-select-all-children`: select all entries in all subdirectories of the selected directory  
 
 The `filetree-select-open-files` command can be used to select all files currently opened in buffers.
 
@@ -50,6 +51,7 @@ The `filetree` command offers various switches to control which files are shown 
 * `-no-empty-dirs`: do not show empty directories  
 * `-show-hidden`: show hidden files and directories  
 * `-depth <DEPTH>`: only traverse the root directory up to <DEPTH> directories deep (unlimited by default)  
+* `-only-dirs`: only show directories, not files  
 
 In addition, the following options and faces can be changed to affect the style of the tree:
 * option `filetree_indentation_level`: The number of padding characters for each depth level (>=0, default 3)  

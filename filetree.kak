@@ -19,7 +19,7 @@ face global FileTreeEmptyName black,red
 
 define-command filetree-switch-or-start -params .. -docstring '
 filetree-switch-or-start: switch to the *filetree* buffer.
-If it buffer does not exist, or the current kakoune directory has changed, it is generated from
+If the buffer does not exist, or the current kakoune directory has changed, it is generated from
 scratch. In this case, all arguments are forwarded to the ''filetree'' command.
 ' -shell-script-candidates %{
     printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs -show-hidden -depth './' */
@@ -277,7 +277,9 @@ filetree-select-first-child: in the *filetree* buffer, select the first element 
     }
 }
 
-define-command filetree-select-direct-children %{
+define-command filetree-select-direct-children -docstring '
+filetree-select-direct-children: in the *filetree* buffer, select all elements in the selected directory
+' %{
     eval -itersel -save-regs 'l' %{
         exec ';x'
         exec -draft '<a-k>/$<ret>'
@@ -296,7 +298,9 @@ define-command filetree-select-direct-children %{
     }
 }
 
-define-command filetree-select-all-children %{
+define-command filetree-select-all-children -docstring '
+filetree-select-all-children: in the *filetree* buffer, select all elements which are descendents of the selected directory
+' %{
     eval -itersel -save-regs 'l' %{
         exec ';x'
         exec -draft '<a-k>/$<ret>'
