@@ -344,19 +344,21 @@ define-command -hidden filetree-eval-on-fullpath -params 1 %{
 }
 
 define-command -hidden filetree-open-selected-file -params ..1 %{
-    filetree-eval-on-fullpath %{
-        try %{
+    filetree-eval-on-fullpath %sh{
+        printf '%s' "try %{
             buffer %reg{p}
         } catch %{
             edit -existing %reg{p}
-            reg e "x%reg{e}"
-        } catch %{
-            eval %sh{ [ "$1" = '-create' ] || echo fail }
-            edit %reg{p}
-            reg c "x%reg{c}"
-        } catch %{
-            reg f "x%reg{f}"
-        }
+            reg e \"x%reg{e}\"
+        } catch %{"
+        if [ "$1" = '-create' ]; then
+            printf '%s' "
+                edit %reg{p}
+                reg c \"x%reg{c}\"
+            } catch %{"
+        fi
+        printf '%s' "reg f \"x%reg{f}\"
+        }"
     }
 }
 
