@@ -2,7 +2,7 @@
 
 [Kakoune](http://kakoune.org) plugin to view and navigate files, using `tree`.
 
-[![Demo](https://asciinema.org/a/160945.png)](https://asciinema.org/a/160945)
+[![Demo](https://asciinema.org/a/568907.png)](https://asciinema.org/a/568907)
 
 ## Setup
 
@@ -35,7 +35,7 @@ The `filetree-select-open-files` command can be used to select all files current
 
 ## Manipulation
 
-The `*filetree*` buffer can be modified by hand as long as the general tree-structure is preserved (for example, certain irrelevant files or directories can be filtered out by hand).
+The `*filetree*` buffer can be modified by hand as long as the general tree-structure is preserved (for example, certain irrelevant files or directories can be filtered out by deleting the corresponding lines).
 
 The `*filetree*` buffer supports limited manipulation of the filesystem with the commands `filetree-create-child` and `filetree-create-sibling`. 
 Note that the two commands do not create the files themselves, they only adjust the buffer to keep the tree structure valid. The desired filename can then be typed out, and then opened with `filetree-open-selected-files -create`.
@@ -54,12 +54,12 @@ The `filetree` command offers various switches to control which files are shown 
 * `-only-dirs`: only show directories, not files  
 
 In addition, the following options and faces can be changed to affect the style of the tree:
-* option `filetree_indentation_level`: The number of padding characters for each depth level (>=0, default 3)  
-* face `FileTreePipes`: Used for the indentation lines of the tree (`rgb:606060,default`)  
-* face `FileTreeDirName`: Used for directories (`blue,default+b`)  
-* face `FileTreeFileName`: Used for files (`default,default`)  
-* face `FileTreeOpenFiles`: Used for files that have an open buffer (`black,yellow`)  
-* face `FileTreeEmptyName`: Used for highlighting empty (and therefore invalid) entries, such as when creating them (`default,red`)  
+* option `filetree_indentation_level`: number of padding characters for each depth level (>=0, default 3)  
+* face `FileTreePipes`: used for the indentation lines of the tree (`rgb:606060,default`)  
+* face `FileTreeDirName`: used for directories (`blue,default+b`)  
+* face `FileTreeFileName`: used for files (`default,default`)  
+* face `FileTreeOpenFiles`: used for files that have an open buffer (`black,yellow`)  
+* face `FileTreeEmptyName`: used for highlighting empty (and therefore invalid) entries, such as when creating them (`default,red`)  
 
 ## License
 
