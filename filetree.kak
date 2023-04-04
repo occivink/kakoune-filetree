@@ -44,9 +44,10 @@ Switches:
     -show-hidden: show hidden files and directories
     -depth <DEPTH>: only traverse the root directory up to <DEPTH> directories deep (unlimited by default)
     -only-dirs: only show directories, not files
+    -no-report: do not show footer after the tree
 ' -shell-script-candidates %{
     printf '%s\n' -files-first -dirs-first -consider-gitignore -no-empty-dirs \
-    -show-hidden -depth -only-dirs './' */
+    -show-hidden -depth -only-dirs -no-report './' */
 } %{
     eval -save-regs 't' %{
         eval %sh{
@@ -57,6 +58,7 @@ Switches:
             directory=''
             hidden=''
             only_dirs=''
+            no_report=''
 
             arg_num=0
             accept_switch='y'
@@ -78,6 +80,8 @@ Switches:
                         gitignore='--gitignore'
                     elif [ "$arg" = '-only-dirs' ]; then
                         only_dirs="-P '*/'"
+                    elif [ "$arg" = '-no-report' ]; then
+                        no_report="--noreport"
                     elif [ "$arg" = '-depth' ]; then
                         if [ $# -eq 0 ]; then
                             echo 'fail "Missing argument to -depth"'
@@ -116,7 +120,7 @@ Switches:
             mkfifo "$fifo"
             # $kak_opt_filetree_indentation_level <- need to let the script access this var
             perl_script="${kak_opt_filetree_script_path%/*}/filetree.perl"
-            (tree -p -v $only_dirs $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
+            (tree -p -v $only_dirs $no_report $hidden $sorting $prune $gitignore $depth "$directory" | perl "$perl_script" 'process' > "$fifo") < /dev/null > /dev/null 2>&1 &
             printf "set-register t '%s'" "$fifo"
         }
         try %{ delete-buffer *filetree* }
