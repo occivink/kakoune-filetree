@@ -440,10 +440,10 @@ define-command -hidden filetree-refresh-files-highlight %{
     try %{
         eval -draft -buffer *filetree* %{
             eval select %sh{
-                # $kak_quoted_buflist
                 script="${kak_opt_filetree_script_path%/*}/filetree.perl"
                 echo "write '$kak_response_fifo'" > "$kak_command_fifo"
-                perl "$script" 'match-buffers' < "$kak_response_fifo"
+                eval set -- "$kak_quoted_buflist"
+                perl "$script" 'match-buffers' "$@" < "$kak_response_fifo"
             }
             filetree-select-path-component
 
@@ -464,7 +464,24 @@ The completions are provided by the *filetree* buffer.
 
 complete-command -menu filetree-edit shell-script-candidates %{
     echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
-    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten' < "$kak_response_fifo"
+    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-nodirs' < "$kak_response_fifo"
+}
+
+define-command filetree-goto -params 1.. -docstring '
+filetree-goto: select the specified path elements in the *filetree* buffer
+' %{
+    buffer *filetree*
+    eval select %sh{
+        script="${kak_opt_filetree_script_path%/*}/filetree.perl"
+        echo "write '$kak_response_fifo'" > "$kak_command_fifo"
+        perl "$script" 'match-buffers' "$@" < "$kak_response_fifo"
+    }
+    filetree-select-path-component
+}
+
+complete-command -menu filetree-goto shell-script-candidates %{
+    echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
+    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-all' < "$kak_response_fifo"
 }
 
 }

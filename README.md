@@ -23,7 +23,9 @@ The files that are open in buffers are highlighted with a special face.
 
 The `filetree-edit` command can be used for opening files, using the fuzzy matching engine of Kakoune. The completions are generated using the content of the `*filetree*` buffer: any file in the tree is proposed as a possible completion. This command can be used from any context, as long as the `*filetree*` buffer exists.
 
-The following commands can be used to navigate the files and directories depending on their relationship:  
+The `filetree-goto` command can be used for selecting entries in the filetree, using the same fuzzy completion as with `filetree-edit`.
+
+The following commands can be used to navigate the files and directories depending on their relationship:
 * `filetree-select-prev-sibling`: select next entry in the same directory as the selected entry (`<a-up>`)  
 * `filetree-select-next-sibling`: select previous entry in the same directory as the selected entry (`<a-down>`)  
 * `filetree-select-parent-directory`: select parent directory of the selected entry (`<a-left>`)  

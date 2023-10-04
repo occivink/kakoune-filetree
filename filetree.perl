@@ -5,31 +5,7 @@ my $operation = $ARGV[0];
 if (not defined($operation)) {
     exit(3);
 }
-
-sub parse_shell_quoted {
-    my $str = shift;
-    my @res;
-    my $elem = "";
-    while (1) {
-        if ($str !~ m/\G'([\S\s]*?)'/gc) {
-            exit(1);
-        }
-        $elem .= $1;
-        if ($str =~ m/\G *$/gc) {
-            push(@res, $elem);
-            $elem = "";
-            last;
-        } elsif ($str =~ m/\G\\'/gc) {
-            $elem .= "'";
-        } elsif ($str =~ m/\G */gc) {
-            push(@res, $elem);
-            $elem = "";
-        } else {
-            exit(1);
-        }
-    }
-    return @res;
-}
+shift;
 
 sub read_line_by_line {
     my $callback = $_[0];
@@ -85,20 +61,24 @@ sub read_line_by_line {
     }
 }
 
-if ($operation eq "flatten") {
-    sub callback {
+if ($operation eq "flatten-all") {
+    sub callback1 {
+        print("$_[0]\n");
+    }
+    read_line_by_line(\&callback1);
+} elsif ($operation eq "flatten-nodirs") {
+    sub callback2 {
         if (not $_[1]) {
             print("$_[0]\n");
         }
     }
-    read_line_by_line(\&callback);
+    read_line_by_line(\&callback2);
 } elsif ($operation eq "match-buffers") {
-    my @buffers = parse_shell_quoted($ENV{"kak_quoted_buflist"});
     my %map;
-    for my $buf (@buffers) {
+    for my $buf (@ARGV) {
         $map{$buf} = 1;
     }
-    sub callback2 {
+    sub callback3 {
         my $path = $_[0];
         if (exists($map{$path})) {
             my $line = $_[2];
@@ -106,7 +86,7 @@ if ($operation eq "flatten") {
             delete $map{$path};
         }
     }
-    read_line_by_line(\&callback2);
+    read_line_by_line(\&callback3);
 } elsif ($operation eq "process") {
 
     my $repetition = int($ENV{"kak_opt_filetree_indentation_level"});
