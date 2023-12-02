@@ -463,8 +463,11 @@ The completions are provided by the *filetree* buffer.
 }
 
 complete-command -menu filetree-edit shell-script-candidates %{
-    echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
-    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-nodirs' < "$kak_response_fifo"
+    fifo=$(mktemp -u)
+    mkfifo "$fifo"
+    echo "try %{ eval -buffer *filetree* %{ write '$fifo' } } catch %{ echo -to-file '$fifo' '' }" | kak -p "$kak_session"
+    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-nodirs' < "$fifo"
+    rm "$fifo"
 }
 
 define-command filetree-goto -params 1.. -docstring '
@@ -480,8 +483,11 @@ filetree-goto: select the specified path elements in the *filetree* buffer
 }
 
 complete-command -menu filetree-goto shell-script-candidates %{
-    echo "try %{ eval -buffer *filetree* %{ write '$kak_response_fifo' } } catch %{ echo -to-file '$kak_response_fifo' '' }" > "$kak_command_fifo"
-    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-all' < "$kak_response_fifo"
+    fifo=$(mktemp -u)
+    mkfifo "$fifo"
+    echo "try %{ eval -buffer *filetree* %{ write '$fifo' } } catch %{ echo -to-file '$fifo' '' }" | kak -p "$kak_session"
+    perl "${kak_opt_filetree_script_path%/*}/filetree.perl" 'flatten-all' < "$fifo"
+    rm "$fifo"
 }
 
 }
