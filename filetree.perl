@@ -111,7 +111,7 @@ if ($operation eq "flatten-all") {
             $out .= $1 . $2 x $repetition . ' ';
         }
         my $type = '';
-        if ($input =~ m/\G\[([-dl]).{9}\]  /gc) {
+        if ($input =~ m/\G\[([-sdl]).{9}\]  /gc) {
             $type = $1;
         }
         if ($type eq 'l') {
